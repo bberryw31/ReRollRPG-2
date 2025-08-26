@@ -1,3 +1,5 @@
+import pygame.math
+
 from settings import *
 
 
@@ -19,7 +21,7 @@ class Level:
 
         # object positions
         self.walls = []
-        self.spawn_point = (WIDTH // 2, HEIGHT // 2)  # Default center
+        self.spawn_point = pygame.math.Vector2(WIDTH // 2, HEIGHT // 2)  # Default center
         self.enemy_spawns = []
 
         # load objects
@@ -48,7 +50,7 @@ class Level:
                     if obj.name == 'walls':
                         self.walls.append(pygame.Rect(x, y, w, h))
                     elif obj.name == 'player':
-                        self.spawn_point = (x, y)
+                        self.spawn_point = pygame.math.Vector2(x, y)
                     elif obj.name == 'enemies':
                         self.enemy_spawns.append((x, y))
 
