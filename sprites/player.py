@@ -30,13 +30,13 @@ class Player(pygame.sprite.Sprite):
         # idle animation
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
-            img = pygame.transform.scale(img, (TILESIZE, TILESIZE * 2))
+            img = pygame.transform.scale_by(img, 2)
             self.idle_frames.append(img)
 
         # run animation
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/run{i}.png")
-            img = pygame.transform.scale(img, (TILESIZE, TILESIZE * 2))
+            img = pygame.transform.scale_by(img, 2)
             self.run_frames.append(img)
 
     def update(self):
