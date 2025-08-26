@@ -2,7 +2,7 @@ from settings import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, groups):
+    def __init__(self, position, groups):
         super().__init__(groups)
 
         # load animation frames
@@ -13,10 +13,10 @@ class Player(pygame.sprite.Sprite):
         # surface
         self.current_frame = 0
         self.image = self.idle_frames[0]
-        self.rect = self.image.get_rect(center=(x, y))
+        self.rect = self.image.get_rect(center=position)
 
         # movement
-        self.position = pygame.math.Vector2(x, y)
+        self.position = pygame.math.Vector2(position)
         self.direction = pygame.math.Vector2()
 
         # animation
@@ -29,13 +29,13 @@ class Player(pygame.sprite.Sprite):
         # idle animation
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
-            img = pygame.transform.scale(img, (TILESIZE, TILESIZE))
+            img = pygame.transform.scale(img, (TILESIZE, TILESIZE * 2))
             self.idle_frames.append(img)
 
         # run animation
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/run{i}.png")
-            img = pygame.transform.scale(img, (TILESIZE, TILESIZE))
+            img = pygame.transform.scale(img, (TILESIZE, TILESIZE * 2))
             self.run_frames.append(img)
 
     def update(self):
