@@ -1,5 +1,6 @@
 from settings import *
 from level import Level
+from sprites.player import Player
 
 
 class Game:
@@ -9,11 +10,18 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
-        self.level = None
         self.running = True
 
     def new_game(self):
+        # initialize a new game
+        # level
         self.level = Level('assets/maps/lv1.tmx', self)
+
+        # sprites
+        self.all_sprites = pygame.sprite.Group()
+
+        # player
+        self.player = Player((self.level.spawn_point[0], self.level.spawn_point[1]), self.all_sprites)
 
     def run(self):
         # create new game
@@ -40,6 +48,9 @@ class Game:
 
         # draw level
         self.level.draw(self.screen)
+
+        # draw sprites
+        self.all_sprites.draw(self.screen)
 
         # debugging
         # Draw FPS (helpful for debugging)
