@@ -1,6 +1,7 @@
 from settings import *
 from level import Level
 from sprites.player import Player
+from sprites.enemy import Enemy
 
 
 class Game:
@@ -20,7 +21,12 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
 
         # player
-        self.player = Player((self.level.spawn_point[0], self.level.spawn_point[1]), self.all_sprites)
+        self.player = Player(self.level.spawn_point, self.all_sprites)
+
+        # enemy
+        self.enemies = pygame.sprite.Group()
+        for spawn in self.level.enemy_spawns:
+            Enemy(spawn, [self.all_sprites, self.enemies])
 
     def run(self):
         # create new game
