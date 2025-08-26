@@ -1,5 +1,6 @@
 import pygame
 import pytmx
+
 # Game settings
 
 # Window
@@ -19,4 +20,4 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
 # Player
-PLAYER_SPEED = 4
+PLAYER_SPEED = 3

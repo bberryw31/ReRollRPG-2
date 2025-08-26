@@ -22,6 +22,7 @@ class Player(pygame.sprite.Sprite):
         # animation
         self.animation_speed = 0.15
         self.is_moving = False
+        self.facing = "right"
 
     def load_animations(self):
         sprite_path = 'assets/sprites/character'
@@ -48,16 +49,20 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         # direction
-        self.direction.x = (int(keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT])) * PLAYER_SPEED
-        self.direction.y = (int(keys[pygame.K_DOWN]) - int(keys[pygame.K_UP])) * PLAYER_SPEED
+        self.direction.x = (int(keys[pygame.K_d]) - int(keys[pygame.K_a]))
+        self.direction.y = (int(keys[pygame.K_s]) - int(keys[pygame.K_w]))
         self.direction = self.direction.normalize() if self.direction else self.direction
 
         # check if moving
         self.is_moving = (self.direction.x != 0 or self.direction.y != 0)
+        if self.direction.x > 0:
+            self.facing = "right"
+        elif self.direction.x < 0:
+            self.facing = "left"
 
     def move(self):
         # update player position
-        self.position += self.direction
+        self.position += self.direction * PLAYER_SPEED
         self.rect.center = self.position
 
     def animate(self):
@@ -73,4 +78,7 @@ class Player(pygame.sprite.Sprite):
             self.current_frame = 0
 
         # update image
-        self.image = frames[int(self.current_frame)]
+        img = frames[int(self.current_frame)]
+        if self.facing == "left":
+            img = pygame.transform.flip(img, True, False)
+        self.image = img.convert_alpha()

@@ -14,7 +14,6 @@ class Game:
 
     def new_game(self):
         # initialize a new game
-        # level
         self.level = Level('assets/maps/lv1.tmx', self)
 
         # sprites
@@ -40,6 +39,7 @@ class Game:
 
     def update(self):
         # update game
+        self.all_sprites.update()
         self.clock.tick(FPS)
 
     def draw(self):
@@ -51,13 +51,6 @@ class Game:
 
         # draw sprites
         self.all_sprites.draw(self.screen)
-
-        # debugging
-        # Draw FPS (helpful for debugging)
-        fps = str(int(self.clock.get_fps()))
-        font = pygame.font.Font(None, 30)
-        text = font.render(fps, True, WHITE)
-        self.screen.blit(text, (10, 10))
 
         pygame.display.flip()
 
