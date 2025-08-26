@@ -29,30 +29,18 @@ class Level:
 
     def render_map(self):
         # render map from tmx
-        for layer in self.tmx_data.visible_layers:
-            if isinstance(layer, pytmx.TiledTileLayer):
-                for x, y, gid in layer:
-                    tile = self.tmx_data.get_tile_image_by_gid(gid)
-                    if tile:
-                        tile = pygame.transform.scale(tile, (TILESIZE, TILESIZE))
-                        self.image.blit(tile, (x * TILESIZE, y * TILESIZE))
+        for x, y, image in self.tmx_data.get_layer_by_name('Ground').tiles():
+            self.image.blit(pygame.transform.scale_by(image, SCALE_FACTOR), (x * TILESIZE, y * TILESIZE))
 
     def load_objects(self):
         # load objects from tmx
-        for layer in self.tmx_data.visible_layers:
-            if isinstance(layer, pytmx.TiledObjectGroup):
-                for obj in layer:
-                    x = obj.x * (TILESIZE / ORIGINAL_TILESIZE)
-                    y = obj.y * (TILESIZE / ORIGINAL_TILESIZE)
-                    w = obj.width * (TILESIZE / ORIGINAL_TILESIZE)
-                    h = obj.height * (TILESIZE / ORIGINAL_TILESIZE)
-
-                    if obj.name == 'walls':
-                        self.walls.append(pygame.Rect(x, y, w, h))
-                    elif obj.name == 'player':
-                        self.spawn_point = pygame.math.Vector2(x, y)
-                    elif obj.name == 'enemies':
-                        self.enemy_spawns.append((x, y))
+        for obj in self.tmx_data.get_layer_by_name('Wall'):
+            self.walls.append(pygame.Rect(obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR, obj.width * SCALE_FACTOR,
+                                          obj.height * SCALE_FACTOR))
+        for obj in self.tmx_data.get_layer_by_name('Player'):
+            self.spawn_point = (obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR)
+        for obj in self.tmx_data.get_layer_by_name('Enemy'):
+            self.enemy_spawns.append((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR))
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
