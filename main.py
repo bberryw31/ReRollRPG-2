@@ -1,4 +1,5 @@
-from settings import *  # Import all our constants
+from settings import *
+from level import Level
 
 
 class Game:
@@ -8,9 +9,15 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
+        self.level = None
         self.running = True
 
+    def new_game(self):
+        self.level = Level('assets/maps/lv1.tmx', self)
+
     def run(self):
+        # create new game
+        self.new_game()
         # game loop
         while self.running:
             self.events()
@@ -30,6 +37,17 @@ class Game:
     def draw(self):
         # draw game
         self.screen.fill(BLACK)
+
+        # draw level
+        self.level.draw(self.screen)
+
+        # debugging
+        # Draw FPS (helpful for debugging)
+        fps = str(int(self.clock.get_fps()))
+        font = pygame.font.Font(None, 30)
+        text = font.render(fps, True, WHITE)
+        self.screen.blit(text, (10, 10))
+
         pygame.display.flip()
 
 
