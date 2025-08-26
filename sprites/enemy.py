@@ -1,4 +1,5 @@
 from settings import *
+import random
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -10,8 +11,8 @@ class Enemy(pygame.sprite.Sprite):
         self.load_animations()
 
         # surface
-        self.current_frame = 0
-        self.image = self.idle_frames[0]
+        self.current_frame = random.randint(0, len(self.idle_frames) - 1)
+        self.image = self.idle_frames[self.current_frame]
         self.rect = self.image.get_rect(center=position)
 
         # animation
