@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
             img = pygame.transform.scale_by(img, 2)
-            self.idle_frames.append(img)
+            self.idle_frames.append(img.convert_alpha())
 
     def update(self):
         self.animate()
@@ -40,4 +40,4 @@ class Enemy(pygame.sprite.Sprite):
 
         # update image
         img = frames[int(self.current_frame)]
-        self.image = img.convert_alpha()
+        self.image = img

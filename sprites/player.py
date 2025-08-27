@@ -31,13 +31,13 @@ class Player(pygame.sprite.Sprite):
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
             img = pygame.transform.scale_by(img, 2)
-            self.idle_frames.append(img)
+            self.idle_frames.append(img.convert_alpha())
 
         # run animation
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/run{i}.png")
             img = pygame.transform.scale_by(img, 2)
-            self.run_frames.append(img)
+            self.run_frames.append(img.convert_alpha())
 
     def update(self):
         self.input()
@@ -81,4 +81,4 @@ class Player(pygame.sprite.Sprite):
         img = frames[int(self.current_frame)]
         if self.facing == "left":
             img = pygame.transform.flip(img, True, False)
-        self.image = img.convert_alpha()
+        self.image = img
