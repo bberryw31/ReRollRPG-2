@@ -46,7 +46,23 @@ class Game:
     def update(self):
         # update game
         self.all_sprites.update()
+
+        # handle collisions
+        self.handle_collisions()
+
+        # game fps
         self.clock.tick(FPS)
+
+    def handle_collisions(self):
+        # check collisions
+        self.check_player_wall_collisions()
+    
+    def check_player_wall_collisions(self):
+        # check player collision with wall
+        for wall in self.level.walls:
+            if self.player.rect.colliderect(wall):
+                self.player.revert_movement()
+                break
 
     def draw(self):
         # draw game
