@@ -61,8 +61,16 @@ class Player(pygame.sprite.Sprite):
             self.facing = "left"
 
     def move(self):
+        # store old position
+        self.old_position = self.position.copy()
+
         # update player position
         self.position += self.direction * PLAYER_SPEED
+        self.rect.center = self.position
+
+    def revert_movement(self):
+        # revert to previous position if needed
+        self.position = self.old_position
         self.rect.center = self.position
 
     def animate(self):
