@@ -1,0 +1,44 @@
+# PyCharm project settings
+.idea/
+
+# Python cache/bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Logs and temporary files
+*.log
+*.pot
+*.mo
+*.sqlite3
+
+# Unit test / coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Game-specific (if you save assets dynamically)
+*.sav
+*.tmp
+*.bak
+
+# Jupyter notebooks (optional if you don’t use them)
+.ipynb_checkpoints/
