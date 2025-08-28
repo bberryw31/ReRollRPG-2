@@ -56,13 +56,39 @@ class Game:
     def handle_collisions(self):
         # check collisions
         self.check_player_wall_collisions()
-    
+
     def check_player_wall_collisions(self):
         # check player collision with wall
         for wall in self.level.walls:
             if self.player.rect.colliderect(wall):
-                self.player.revert_movement()
+                self.resolve_collision(wall)
                 break
+
+    def resolve_collision(self, target):
+        # calculate overlaps on each side
+        overlap_left = self.player.rect.right - target.left
+        overlap_right = target.right - self.player.rect.left
+        overlap_top = self.player.rect.bottom - target.top
+        overlap_bottom = target.bottom - self.player.rect.top
+
+        # find minimum overlap (shortest distance to push)
+        min_overlap = min(overlap_left, overlap_right, overlap_top, overlap_bottom)
+
+        if min_overlap == overlap_left:
+            # push left
+            self.player.rect.right = target.left
+        elif min_overlap == overlap_right:
+            # push right
+            self.player.rect.left = target.right
+        elif min_overlap == overlap_top:
+            # push up
+            self.player.rect.bottom = target.top
+        else:
+            # push down
+            self.player.rect.top = target.bottom
+
+        # Update position to match rect
+        self.player.position = pygame.math.Vector2(self.player.rect.center)
 
     def draw(self):
         # draw game
