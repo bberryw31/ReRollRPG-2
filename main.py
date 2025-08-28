@@ -55,13 +55,26 @@ class Game:
 
     def handle_collisions(self):
         # check collisions
-        self.check_player_wall_collisions()
+        self.check_player_wall_collision()
+        self.check_player_enemy_collision()
 
-    def check_player_wall_collisions(self):
+    def check_player_wall_collision(self):
         # check player collision with wall
         for wall in self.level.walls:
+            print(wall)
             if self.player.rect.colliderect(wall):
                 self.resolve_collision(wall)
+                break
+
+    def check_player_enemy_collision(self):
+        # find collided enemy sprites
+        hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, False)
+
+        if hit_enemies:
+            for enemy in hit_enemies:
+                print(enemy)
+                self.resolve_collision(enemy.rect)
+                # self.enemy_encounter(enemy)
                 break
 
     def resolve_collision(self, target):
