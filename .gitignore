@@ -42,3 +42,6 @@ Thumbs.db
 
 # Jupyter notebooks (optional if you don’t use them)
 .ipynb_checkpoints/
+
+assets/tilesets/rrr2.tiled-session
+assets/tilesets/rrr2.tiled-project
