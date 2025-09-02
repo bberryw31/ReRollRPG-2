@@ -2,7 +2,7 @@ from settings import *
 from level import Level
 from sprites.player import Player
 from sprites.enemy import Enemy
-from interaction_system import InteractionPopup, InteractionType
+from interaction_system import InteractionManager, InteractionType
 from ui_manager import UIManager
 
 
@@ -16,7 +16,7 @@ class Game:
         self.running = True
 
         # instance variables
-        self.interaction_popup = InteractionPopup()
+        self.interaction_manager = InteractionManager()
         self.ui_manager = UIManager()
 
     def new_game(self):
@@ -49,16 +49,19 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
 
-            # interaction popup key input
-            self.interaction_popup.handle_input(event)
+            # interaction key input
+            self.interaction_manager.handle_input(event)
 
     def update(self):
-        if not self.interaction_popup.active:
+        if not self.interaction_manager.in_combat:
             # update game
             self.all_sprites.update()
 
             # handle collisions
             self.handle_collisions()
+
+            # check nearby enemies
+            self.interaction_manager.update(self.player, self.enemies)
 
         # game fps
         self.clock.tick(FPS)
@@ -82,10 +85,6 @@ class Game:
         if hit_enemies:
             for enemy in hit_enemies:
                 self.resolve_collision(enemy.rect)
-
-                # initiate interation
-                if not self.interaction_popup.active:
-                    self.interaction_popup.start_interaction(InteractionType.FIGHT, "Enemy", enemy)
 
                 break
 
@@ -128,8 +127,12 @@ class Game:
         # draw UI
         self.ui_manager.draw_player_ui(self.screen, self.player)
 
-        # draw interaction popup
-        self.interaction_popup.draw(self.screen)
+        if self.interaction_manager.nearby_enemy:
+            # draw interaction popup
+            self.interaction_manager.draw(self.screen)
+
+            nearby_enemy = self.interaction_manager.nearby_enemy
+            self.ui_manager.draw_enemy_ui(self.screen, nearby_enemy, nearby_enemy.HP, nearby_enemy.max_HP)
 
         pygame.display.flip()
 
