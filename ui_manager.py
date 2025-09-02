@@ -21,8 +21,8 @@ class UIManager:
 
     def draw_player_ui(self, screen, player):
         # player ui top left
-        ui_x = 10
-        ui_y = 10
+        ui_x = 20
+        ui_y = 20
 
         # player icon
         player_icon = pygame.transform.scale_by(player.idle_frames[0], 1.5)
@@ -34,8 +34,8 @@ class UIManager:
 
     def draw_enemy_ui(self, screen, enemy, enemy_hp, enemy_max_hp):
         # enemy ui top right
-        ui_x = screen.get_width() - 10
-        ui_y = 10
+        ui_x = screen.get_width() - 20
+        ui_y = 20
 
         # enemy icon
         enemy_icon = pygame.transform.scale_by(enemy.idle_frames[0], 1.5)
