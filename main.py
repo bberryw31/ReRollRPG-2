@@ -2,6 +2,7 @@ from settings import *
 from level import Level
 from sprites.player import Player
 from sprites.enemy import Enemy
+from interaction_system import InteractionPopup, InteractionType
 
 
 class Game:
@@ -12,6 +13,9 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.running = True
+
+        # instance variable to store state of interactions
+        self.interaction_popup = InteractionPopup()
 
     def new_game(self):
         # initialize a new game
@@ -43,12 +47,16 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
 
-    def update(self):
-        # update game
-        self.all_sprites.update()
+            # interaction popup key input
+            self.interaction_popup.handle_input(event)
 
-        # handle collisions
-        self.handle_collisions()
+    def update(self):
+        if not self.interaction_popup.active:
+            # update game
+            self.all_sprites.update()
+
+            # handle collisions
+            self.handle_collisions()
 
         # game fps
         self.clock.tick(FPS)
@@ -61,7 +69,6 @@ class Game:
     def check_player_wall_collision(self):
         # check player collision with wall
         for wall in self.level.walls:
-            print(wall)
             if self.player.rect.colliderect(wall):
                 self.resolve_collision(wall)
                 break
@@ -72,9 +79,12 @@ class Game:
 
         if hit_enemies:
             for enemy in hit_enemies:
-                print(enemy)
                 self.resolve_collision(enemy.rect)
-                # self.enemy_encounter(enemy)
+
+                # initiate interation
+                if not self.interaction_popup.active:
+                    self.interaction_popup.start_interaction(InteractionType.FIGHT, "Enemy", enemy)
+
                 break
 
     def resolve_collision(self, target):
@@ -112,6 +122,9 @@ class Game:
 
         # draw sprites
         self.all_sprites.draw(self.screen)
+
+        # draw interaction popup
+        self.interaction_popup.draw(self.screen)
 
         pygame.display.flip()
 
