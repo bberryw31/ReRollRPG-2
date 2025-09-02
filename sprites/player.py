@@ -24,6 +24,19 @@ class Player(pygame.sprite.Sprite):
         self.is_moving = False
         self.facing = "right"
 
+        # HP system
+        self.max_HP = 10
+        self.HP = self.max_HP
+
+    def take_damage(self, damage):
+        # take damage and return if alive
+        self.HP = max(0, self.HP - damage)
+        return self.HP > 0
+
+    def heal(self, amount):
+        # heal
+        self.HP = min(self.max_HP, self.HP + amount)
+
     def load_animations(self):
         sprite_path = 'assets/sprites/character'
 
