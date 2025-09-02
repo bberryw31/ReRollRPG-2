@@ -22,20 +22,20 @@ class UIManager:
     def draw_player_ui(self, screen, player):
         # player ui top left
         ui_x = 20
-        ui_y = 20
+        ui_y = 15
 
         # player icon
         player_icon = pygame.transform.scale_by(player.idle_frames[0], 1.5)
         screen.blit(player_icon, (ui_x, ui_y))
 
         # player hp
-        hearts_start_y = ui_y + player_icon.get_height() + 5
+        hearts_start_y = ui_y + player_icon.get_height() + 10
         self.draw_hearts(screen, ui_x, hearts_start_y, player.HP, player.max_HP)
 
     def draw_enemy_ui(self, screen, enemy, enemy_hp, enemy_max_hp):
         # enemy ui top right
         ui_x = screen.get_width() - 20
-        ui_y = 20
+        ui_y = 15
 
         # enemy icon
         enemy_icon = pygame.transform.scale_by(enemy.idle_frames[0], 1.5)
@@ -44,7 +44,7 @@ class UIManager:
         screen.blit(enemy_icon, icon_rect)
 
         # enemy hp
-        hearts_start_y = ui_y + enemy_icon.get_height() + 5
+        hearts_start_y = ui_y + enemy_icon.get_height() + 10
         hearts_x = icon_rect.right - (((enemy_max_hp + 1) // 2) * (self.heart_width + 2))
         self.draw_hearts(screen, hearts_x, hearts_start_y, enemy_hp, enemy_max_hp)
 
