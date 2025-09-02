@@ -11,7 +11,7 @@ class UIManager:
         self.heart_empty = pygame.image.load("assets/ui/ui_heart_empty.png")
 
         # scale heart images
-        heart_scale = 2
+        heart_scale = 1.5
         self.heart_full = pygame.transform.scale_by(self.heart_full, heart_scale)
         self.heart_half = pygame.transform.scale_by(self.heart_half, heart_scale)
         self.heart_empty = pygame.transform.scale_by(self.heart_empty, heart_scale)
@@ -25,7 +25,7 @@ class UIManager:
         ui_y = 10
 
         # player icon
-        player_icon = pygame.transform.scale_by(player.idle_frames[0], 2)
+        player_icon = pygame.transform.scale_by(player.idle_frames[0], 1.5)
         screen.blit(player_icon, (ui_x, ui_y))
 
         # player hp
@@ -38,7 +38,7 @@ class UIManager:
         ui_y = 10
 
         # enemy icon
-        enemy_icon = pygame.transform.scale_by(enemy.idle_frames[0], 2)
+        enemy_icon = pygame.transform.scale_by(enemy.idle_frames[0], 1.5)
         icon_rect = enemy_icon.get_rect()
         icon_rect.topright = (ui_x, ui_y)
         screen.blit(enemy_icon, icon_rect)
