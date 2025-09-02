@@ -18,6 +18,15 @@ class Enemy(pygame.sprite.Sprite):
         # animation
         self.animation_speed = 0.15
 
+        # HP system
+        self.max_HP = 10
+        self.HP = self.max_HP
+
+    def take_damage(self, damage):
+        # take damage and return if alive
+        self.HP = max(0, self.HP - damage)
+        return self.HP > 0
+
     def load_animations(self):
         sprite_path = 'assets/sprites/enemy'
 
