@@ -21,7 +21,7 @@ class InteractionManager:
         self.font = pygame.font.Font(None, 24)
 
         # Proximity detection
-        self.interaction_range = 32
+        self.interaction_range = 50
 
     def update(self, player, enemies):
         if self.in_combat:
@@ -36,7 +36,10 @@ class InteractionManager:
             # find enemy within interaction range
             if distance <= self.interaction_range:
                 self.nearby_enemy = enemy
+                print(enemy)
                 break
+        else:
+            self.nearby_enemy = None
 
     def handle_input(self, event):
         if self.in_combat:
