@@ -3,6 +3,7 @@ from level import Level
 from sprites.player import Player
 from sprites.enemy import Enemy
 from interaction_system import InteractionPopup, InteractionType
+from ui_manager import UIManager
 
 
 class Game:
@@ -14,8 +15,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        # instance variable to store state of interactions
+        # instance variables
         self.interaction_popup = InteractionPopup()
+        self.ui_manager = UIManager()
 
     def new_game(self):
         # initialize a new game
@@ -122,6 +124,9 @@ class Game:
 
         # draw sprites
         self.all_sprites.draw(self.screen)
+
+        # draw UI
+        self.ui_manager.draw_player_ui(self.screen, self.player)
 
         # draw interaction popup
         self.interaction_popup.draw(self.screen)
