@@ -16,6 +16,10 @@ class Level:
         self.image = pygame.Surface((self.width, self.height))
         self.rect = self.image.get_rect()
 
+        # game area offset
+        self.rect.x = GAME_OFFSET_X
+        self.rect.y = GAME_OFFSET_Y
+
         # render map
         self.render_map()
 
@@ -35,12 +39,14 @@ class Level:
     def load_objects(self):
         # load objects from tmx
         for obj in self.tmx_data.get_layer_by_name('Wall'):
-            self.walls.append(pygame.Rect(obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR, obj.width * SCALE_FACTOR,
-                                          obj.height * SCALE_FACTOR))
+            self.walls.append(
+                pygame.Rect(obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y,
+                            obj.width * SCALE_FACTOR,
+                            obj.height * SCALE_FACTOR))
         for obj in self.tmx_data.get_layer_by_name('Player'):
-            self.spawn_point = (obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR)
+            self.spawn_point = (obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y)
         for obj in self.tmx_data.get_layer_by_name('Enemy'):
-            self.enemy_spawns.append((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR))
+            self.enemy_spawns.append((obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y))
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
