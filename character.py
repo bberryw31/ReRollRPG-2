@@ -1,4 +1,4 @@
-import random
+from settings import *
 
 
 class CharacterGenerator:
