@@ -33,18 +33,22 @@ class Level:
 
     def render_map(self):
         # render map from tmx
+        print("Rendering map")
         for x, y, image in self.tmx_data.get_layer_by_name('Ground').tiles():
             self.image.blit(pygame.transform.scale_by(image, SCALE_FACTOR), (x * TILESIZE, y * TILESIZE))
 
     def load_objects(self):
         # load objects from tmx
+        print("Loading walls")
         for obj in self.tmx_data.get_layer_by_name('Wall'):
             self.walls.append(
                 pygame.Rect(obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y,
                             obj.width * SCALE_FACTOR,
                             obj.height * SCALE_FACTOR))
+        print("Loading player")
         for obj in self.tmx_data.get_layer_by_name('Player'):
             self.spawn_point = (obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y)
+        print("Loading enemy")
         for obj in self.tmx_data.get_layer_by_name('Enemy'):
             self.enemy_spawns.append((obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y))
 
