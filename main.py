@@ -4,6 +4,8 @@ from sprites.player import Player
 from sprites.enemy import Enemy
 from interaction_manager import InteractionManager, InteractionType
 from ui_manager import UIManager
+from character_generator import CharacterGenerator, CharacterPreviewPlayer
+from game_states import GameState
 
 
 class Game:
@@ -18,6 +20,21 @@ class Game:
         # instance variables
         self.interaction_manager = InteractionManager()
         self.ui_manager = UIManager()
+
+        # state management
+        self.current_state = GameState.TITLE
+
+        # character generation
+        self.character_generator = CharacterGenerator()
+        self.current_character_data = None
+        self.tutorial_level = None
+        self.preview_sprites = None
+        self.preview_player = None
+
+        # silkscreen fonts
+        self.title_font = pygame.font.Font("assets/fonts/Silkscreen/slkscrb.ttf", 72)
+        self.medium_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 36)
+        self.small_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 24)
 
     def new_game(self):
         # initialize a new game
@@ -35,13 +52,48 @@ class Game:
             Enemy(spawn, [self.all_sprites, self.enemies])
 
     def run(self):
-        # create new game
-        self.new_game()
-        # game loop
         while self.running:
-            self.events()
-            self.update()
-            self.draw()
+            events = pygame.event.get()
+
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.running = False
+
+                # handle events based on current state
+                if self.current_state == GameState.TITLE:
+                    self.handle_title_events(event)
+                # elif self.current_state == GameState.CHARACTER_GENERATION:
+                #     self.handle_character_events(event)
+
+            # update based on current state
+            if self.current_state == GameState.TITLE:
+                self.draw_title()
+            # elif self.current_state == GameState.CHARACTER_GENERATION:
+            #     self.update_character_generation()
+            #     self.draw_character_generation()
+
+            pygame.display.flip()
+            self.clock.tick(FPS)
+
+    def handle_title_events(self, event):
+        # title screen key input
+        if event.type == pygame.KEYDOWN:
+            self.current_state = GameState.CHARACTER_GENERATION
+            # self.init_character_generation()
+
+    def draw_title(self):
+        # draw title screen
+        self.screen.fill(BLACK)
+
+        # title
+        title = self.title_font.render("ReRollRPG 2", True, WHITE)
+        title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        self.screen.blit(title, title_rect)
+
+        # instructions
+        instruction = self.medium_font.render("Press any key to start", True, (200, 200, 200))
+        inst_rect = instruction.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
+        self.screen.blit(instruction, inst_rect)
 
     def events(self):
         # event loop
