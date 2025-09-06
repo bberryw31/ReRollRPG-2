@@ -2,7 +2,7 @@ from settings import *
 from level import Level
 from sprites.player import Player
 from sprites.enemy import Enemy
-from interaction import InteractionManager, InteractionType
+from interaction_manager import InteractionManager, InteractionType
 from ui_manager import UIManager
 
 
