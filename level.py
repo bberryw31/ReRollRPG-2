@@ -15,6 +15,9 @@ class Level:
         # surface
         self.image = pygame.Surface((self.width, self.height))
         self.rect = self.image.get_rect()
+        if "tutorial" in filename:
+            self.rect.x = (WIDTH - self.width) // 4
+            self.rect.y = (HEIGHT - self.height) // 3
 
         # render map
         self.render_map()
@@ -34,18 +37,24 @@ class Level:
             self.image.blit(pygame.transform.scale_by(image, SCALE_FACTOR), (x * TILESIZE, y * TILESIZE))
 
     def load_objects(self):
+        is_tutorial = hasattr(self, 'rect') and self.rect.x != 0
+
         # load objects from tmx
         print("Loading walls")
         for obj in self.tmx_data.get_layer_by_name('Wall'):
             self.walls.append(
-                pygame.Rect(obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR, obj.width * SCALE_FACTOR,
+                pygame.Rect(obj.x * SCALE_FACTOR + (self.rect.x if is_tutorial else 0),
+                            obj.y * SCALE_FACTOR + (self.rect.y if is_tutorial else 0),
+                            obj.width * SCALE_FACTOR,
                             obj.height * SCALE_FACTOR))
         print("Loading player")
         for obj in self.tmx_data.get_layer_by_name('Player'):
-            self.spawn_point = (obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR)
+            self.spawn_point = (obj.x * SCALE_FACTOR + (self.rect.x if is_tutorial else 0),
+                                obj.y * SCALE_FACTOR + (self.rect.y if is_tutorial else 0))
         print("Loading enemy")
         for obj in self.tmx_data.get_layer_by_name('Enemy'):
-            self.enemy_spawns.append((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR))
+            self.enemy_spawns.append((obj.x * SCALE_FACTOR + (self.rect.x if is_tutorial else 0),
+                                      obj.y * SCALE_FACTOR + (self.rect.y if is_tutorial else 0)))
 
     def draw(self, screen, camera=None):
         if not camera:
