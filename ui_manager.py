@@ -1,4 +1,4 @@
-import pygame
+from settings import *
 
 
 class UIManager:
@@ -19,6 +19,10 @@ class UIManager:
         self.heart_width = self.heart_full.get_width()
         self.heart_height = self.heart_full.get_height()
 
+        # UI font
+        self.medium_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 28)
+        self.small_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 24)
+
     def draw_player_ui(self, screen, player):
         # player ui top left
         ui_x = 30
@@ -31,6 +35,32 @@ class UIManager:
         # player hp
         hearts_start_y = ui_y + player_icon.get_height() + 10
         self.draw_hearts(screen, ui_x, hearts_start_y, player.HP, player.max_HP)
+
+        # player stats
+        self.draw_player_stats(screen, player)
+
+    def draw_player_stats(self, screen, player):
+        # stats position
+        stats_x = 20
+        stats_start_y = HEIGHT // 2 - 50
+        stats_spacing = 35
+
+        # get player stats
+        stats = player.stats
+        stat_names = ["STR", "DEX", "INT", "LUC"]
+
+        for i, stat_name in enumerate(stat_names):
+            stat_value = stats[stat_name.lower()]
+            current_y = stats_start_y + (i * stats_spacing)
+
+            # draw stat name
+            stat_text = self.medium_font.render(stat_name, True, (255, 255, 255))
+            screen.blit(stat_text, (stats_x, current_y))
+
+            # draw stat value
+            value_text = self.small_font.render(str(stat_value), True, (200, 200, 200))
+            value_x = stats_x + 80
+            screen.blit(value_text, (value_x, current_y + 5))
 
     def draw_enemy_ui(self, screen, enemy, enemy_hp, enemy_max_hp):
         # enemy ui top right
