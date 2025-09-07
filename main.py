@@ -35,22 +35,8 @@ class Game:
         self.medium_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 36)
         self.small_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 24)
 
-    def new_game(self):
-        # initialize a new game
-        self.level = Level('assets/maps/lv1.tmx', self)
-
-        # sprites
-        self.all_sprites = pygame.sprite.Group()
-
-        # player
-        self.player = Player(self.level.spawn_point, self.all_sprites)
-
-        # enemy
-        self.enemies = pygame.sprite.Group()
-        for spawn in self.level.enemy_spawns:
-            Enemy(spawn, [self.all_sprites, self.enemies])
-
     def run(self):
+        # run the game
         while self.running:
             events = pygame.event.get()
 
@@ -116,7 +102,9 @@ class Game:
                 # reroll character
                 self.reroll_character()
             elif event.key == pygame.K_RETURN:
-                print("Venture forth!")
+                # venture forth to gameplay
+                self.current_state = GameState.GAMEPLAY
+                self.init_gameplay()
 
     def reroll_character(self):
         # generate new character
@@ -174,18 +162,28 @@ class Game:
         reroll_text = self.medium_font.render(f"   R        Reroll Character", True, WHITE)
         self.screen.blit(reroll_text, (ui_x, ui_y))
         ui_y += 50
-        start_text = self.medium_font.render(f"SPACE       Venture Forth!", True, WHITE)
+        start_text = self.medium_font.render(f"ENTER       Venture Forth!", True, WHITE)
         self.screen.blit(start_text, (ui_x, ui_y))
 
     # =============== GAME ===============
-    def events(self):
-        # event loop
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
+    def init_gameplay(self):
+        # initialize main gameplay with selected character
+        # load main game level
+        self.level = Level('assets/maps/lv1.tmx', self)
 
-            # interaction key input
-            self.interaction_manager.handle_input(event)
+        # initialize game systems
+        self.interaction_manager = InteractionManager()
+
+        # all sprites
+        self.all_sprites = pygame.sprite.Group()
+
+        # player
+        self.player = Player(self.level.spawn_point, self.all_sprites, self.current_character_data)
+
+        # enemies
+        self.enemies = pygame.sprite.Group()
+        for spawn in self.level.enemy_spawns:
+            Enemy(spawn, [self.all_sprites, self.enemies])
 
     def update(self):
         if not self.interaction_manager.in_combat:
