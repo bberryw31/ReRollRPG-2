@@ -1,6 +1,5 @@
 import pygame
 import pytmx
-import random
 
 # game settings
 
