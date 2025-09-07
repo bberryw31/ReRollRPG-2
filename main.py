@@ -168,6 +168,15 @@ class Game:
         self.screen.blit(self.small_font.render(f"INT: {stats['int']}", True, WHITE), (ui_x, ui_y + 30))
         self.screen.blit(self.small_font.render(f"LUC: {stats['luc']}", True, WHITE), (ui_x + 150, ui_y + 30))
 
+        # control text
+        ui_x = 210
+        ui_y += 150
+        reroll_text = self.medium_font.render(f"   R        Reroll Character", True, WHITE)
+        self.screen.blit(reroll_text, (ui_x, ui_y))
+        ui_y += 50
+        start_text = self.medium_font.render(f"SPACE       Venture Forth!", True, WHITE)
+        self.screen.blit(start_text, (ui_x, ui_y))
+
     # =============== GAME ===============
     def events(self):
         # event loop
