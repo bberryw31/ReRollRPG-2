@@ -37,7 +37,7 @@ class CharacterGenerator:
         character_class = self.classes[class_name]
 
         # random HP
-        base_hp = random.randint(5, 10)
+        base_hp = random.randint(3, 5) * 2
 
         character = {
             "class": character_class,
