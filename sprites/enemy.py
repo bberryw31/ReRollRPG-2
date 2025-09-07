@@ -60,6 +60,13 @@ class Enemy(pygame.sprite.Sprite):
         if self.current_frame >= len(frames):
             self.current_frame = 0
 
+        old_bottom = self.rect.bottom
+        old_centerx = self.rect.centerx
+
         # update image
         img = frames[int(self.current_frame)]
         self.image = img
+
+        self.rect = self.image.get_rect()
+        self.rect.bottom = old_bottom
+        self.rect.centerx = old_centerx

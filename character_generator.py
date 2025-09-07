@@ -182,7 +182,13 @@ class CharacterPreviewPlayer:
         img = frames[int(self.current_frame)]
         if self.facing == "left":
             img = pygame.transform.flip(img, True, False)
+
+        old_bottom = self.rect.bottom
         self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.bottom = old_bottom
+        self.rect.centerx = self.position.x
+        self.position = pygame.math.Vector2(self.rect.center)
 
     def draw(self, screen):
         # draw character
