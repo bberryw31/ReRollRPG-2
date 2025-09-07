@@ -42,15 +42,19 @@ class Level:
         print("Loading walls")
         for obj in self.tmx_data.get_layer_by_name('Wall'):
             self.walls.append(
-                pygame.Rect(obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y,
-                            obj.width * SCALE_FACTOR,
+                pygame.Rect(obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR, obj.width * SCALE_FACTOR,
                             obj.height * SCALE_FACTOR))
         print("Loading player")
         for obj in self.tmx_data.get_layer_by_name('Player'):
-            self.spawn_point = (obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y)
+            self.spawn_point = (obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR)
         print("Loading enemy")
         for obj in self.tmx_data.get_layer_by_name('Enemy'):
-            self.enemy_spawns.append((obj.x * SCALE_FACTOR + GAME_OFFSET_X, obj.y * SCALE_FACTOR + GAME_OFFSET_Y))
+            self.enemy_spawns.append((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR))
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
+    def draw(self, screen, camera=None):
+        if not camera:
+            screen.blit(self.image, self.rect)
+        else:
+            visible_area = camera.get_visible_area()
+            visible_surface = self.image.subsurface(visible_area)
+            screen.blit(visible_surface, (GAME_OFFSET_X, GAME_OFFSET_Y))

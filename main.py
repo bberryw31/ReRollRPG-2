@@ -6,6 +6,7 @@ from interaction_manager import InteractionManager, InteractionType
 from ui_manager import UIManager
 from character_generator import CharacterGenerator, CharacterPreviewPlayer
 from game_states import GameState
+from camera import Camera
 
 
 class Game:
@@ -174,7 +175,10 @@ class Game:
     def init_gameplay(self):
         # initialize main gameplay with selected character
         # load main game level
-        self.level = Level('assets/maps/lv1.tmx', self)
+        self.level = Level('assets/maps/level1.tmx', self)
+
+        # initiate camera
+        self.camera = Camera(self.level.width, self.level.height)
 
         # initialize game systems
         self.interaction_manager = InteractionManager()
@@ -256,17 +260,23 @@ class Game:
         self.screen.fill(BLACK)
 
         # draw level
-        self.level.draw(self.screen)
+        self.level.draw(self.screen, self.camera)
 
         # draw sprites
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            sprite_rect = self.camera.apply(sprite.rect)
+            # only draw if sprite is visible on screen
+            if sprite_rect.colliderect(pygame.Rect(GAME_OFFSET_X, GAME_OFFSET_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)):
+                sprite_rect.x += GAME_OFFSET_X
+                sprite_rect.y += GAME_OFFSET_Y
+                self.screen.blit(sprite.image, sprite_rect)
 
         # draw UI
         self.ui_manager.draw_player_ui(self.screen, self.player)
 
         if self.interaction_manager.nearby_enemy:
             # draw interaction popup
-            self.interaction_manager.draw(self.screen)
+            self.interaction_manager.draw(self.screen, self.camera)
 
             nearby_enemy = self.interaction_manager.nearby_enemy
             self.ui_manager.draw_enemy_ui(self.screen, nearby_enemy, nearby_enemy.HP, nearby_enemy.max_HP)

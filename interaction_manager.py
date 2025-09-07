@@ -1,6 +1,7 @@
-import pygame
 import math
 from enum import Enum
+from camera import Camera
+from settings import *
 
 
 class InteractionType(Enum):
@@ -67,20 +68,21 @@ class InteractionManager:
             return
 
         # enemy position
-        enemy_x = self.nearby_enemy.rect.centerx
-        enemy_y = self.nearby_enemy.rect.top
+        enemy_world_pos = (self.nearby_enemy.rect.centerx, self.nearby_enemy.rect.top)
+        enemy_screen_pos = Camera.apply_pos(enemy_world_pos)
 
-        # prompt text
-        prompt_text = "Press E to attack"
-        text_surface = self.font.render(prompt_text, True, (255, 255, 255))
-        text_rect = text_surface.get_rect()
-        text_rect.centerx = enemy_x
-        text_rect.bottom = enemy_y - 10
+        # add game area offset
+        enemy_screen_x = enemy_screen_pos[0] + GAME_OFFSET_X
+        enemy_screen_y = enemy_screen_pos[1] + GAME_OFFSET_Y
 
-        # prompt background
-        bg_rect = text_rect.copy()
-        bg_rect.inflate(10, 4)
-        pygame.draw.rect(screen, (0, 0, 0), bg_rect)
-        pygame.draw.rect(screen, (255, 255, 255), bg_rect, 1)
+        # only draw if enemy is visible on screen
+        game_area = pygame.Rect(GAME_OFFSET_X, GAME_OFFSET_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
+        if game_area.collidepoint(enemy_screen_x, enemy_screen_y):
+            # draw prompt text
+            prompt_text = "Attack"
+            text_surface = self.font.render(prompt_text, True, (255, 50, 50))
+            text_rect = text_surface.get_rect()
+            text_rect.centerx = enemy_screen_x
+            text_rect.bottom = enemy_screen_y - 5
 
-        screen.blit(text_surface, text_rect)
+            screen.blit(text_surface, text_rect)
