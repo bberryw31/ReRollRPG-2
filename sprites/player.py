@@ -2,8 +2,16 @@ from settings import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, position, groups):
+    def __init__(self, position, groups, character_data):
         super().__init__(groups)
+
+        # character data
+        self.character_data = character_data
+        self.class_info = character_data["class"]
+        self.stats = character_data["stats"]
+        self.HP = character_data["HP"]
+        self.max_HP = character_data["max_HP"]
+        self.sprite_path = character_data["class"]["sprite_path"]
 
         # load animation frames
         self.idle_frames = []
@@ -24,10 +32,6 @@ class Player(pygame.sprite.Sprite):
         self.is_moving = False
         self.facing = "right"
 
-        # HP system
-        self.max_HP = 10
-        self.HP = self.max_HP
-
     def take_damage(self, damage):
         # take damage and return if alive
         self.HP = max(0, self.HP - damage)
@@ -38,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         self.HP = min(self.max_HP, self.HP + amount)
 
     def load_animations(self):
-        sprite_path = 'assets/sprites/character'
+        sprite_path = f'assets/sprites/player/{self.sprite_path}'
 
         # idle animation
         for i in range(4):
