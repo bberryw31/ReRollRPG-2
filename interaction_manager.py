@@ -36,7 +36,6 @@ class InteractionManager:
             # find enemy within interaction range
             if distance <= self.interaction_range:
                 self.nearby_enemy = enemy
-                print(enemy)
                 break
         else:
             self.nearby_enemy = None
