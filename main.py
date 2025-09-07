@@ -251,7 +251,7 @@ class Game:
         # Update position to match rect
         self.player.position = pygame.math.Vector2(self.player.rect.center)
 
-    def draw(self):
+    def draw_gameplay(self):
         # draw game
         self.screen.fill(BLACK)
 
