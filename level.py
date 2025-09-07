@@ -49,8 +49,17 @@ class Level:
 
     def draw(self, screen, camera=None):
         if not camera:
+            # no camera for character generation
             screen.blit(self.image, self.rect)
         else:
+            # implement camera visible area for gameplay
             visible_area = camera.get_visible_area()
+
+            # ensure visible area is within map boundaries
+            visible_area.clamp_ip(pygame.Rect(0, 0, self.width, self.height))
+
+            # get visible part of map
             visible_surface = self.image.subsurface(visible_area)
-            screen.blit(visible_surface, (GAME_OFFSET_X, GAME_OFFSET_Y))
+
+            # draw
+            screen.blit(visible_surface, (0, 0))
