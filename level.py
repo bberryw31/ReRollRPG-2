@@ -16,7 +16,7 @@ class Level:
         self.image = pygame.Surface((self.width, self.height))
         self.rect = self.image.get_rect()
         if "tutorial" in filename:
-            self.rect.x = (WIDTH - self.width) // 4
+            self.rect.x = (WIDTH - self.width) // 3 - 20
             self.rect.y = (HEIGHT - self.height) // 3
 
         # render map
