@@ -29,10 +29,12 @@ class Enemy(pygame.sprite.Sprite):
 
     def load_animations(self):
         sprite_path = 'assets/sprites/enemy'
-
+        flip = random.choice([True, False])
         # idle animation
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
+            if flip:
+                img = pygame.transform.flip(img, True, False)
             img = pygame.transform.scale_by(img, 2)
             self.idle_frames.append(img.convert_alpha())
 
