@@ -16,10 +16,6 @@ class Level:
         self.image = pygame.Surface((self.width, self.height))
         self.rect = self.image.get_rect()
 
-        # game area offset
-        self.rect.x = GAME_OFFSET_X
-        self.rect.y = GAME_OFFSET_Y
-
         # render map
         self.render_map()
 
