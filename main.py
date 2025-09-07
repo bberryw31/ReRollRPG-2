@@ -32,7 +32,7 @@ class Game:
         self.preview_player = None
 
         # silkscreen fonts
-        self.title_font = pygame.font.Font("assets/fonts/Silkscreen/slkscrb.ttf", 72)
+        self.title_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 72)
         self.medium_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 36)
         self.small_font = pygame.font.Font("assets/fonts/Silkscreen/slkscr.ttf", 24)
 
@@ -62,24 +62,25 @@ class Game:
                 # handle events based on current state
                 if self.current_state == GameState.TITLE:
                     self.handle_title_events(event)
-                # elif self.current_state == GameState.CHARACTER_GENERATION:
-                #     self.handle_character_events(event)
+                elif self.current_state == GameState.CHARACTER_GENERATION:
+                    self.handle_character_events(event)
 
             # update based on current state
             if self.current_state == GameState.TITLE:
                 self.draw_title()
-            # elif self.current_state == GameState.CHARACTER_GENERATION:
-            #     self.update_character_generation()
-            #     self.draw_character_generation()
+            elif self.current_state == GameState.CHARACTER_GENERATION:
+                self.update_character_generation()
+                self.draw_character_generation()
 
             pygame.display.flip()
             self.clock.tick(FPS)
 
+    # =============== TITLE ===============
     def handle_title_events(self, event):
         # title screen key input
         if event.type == pygame.KEYDOWN:
             self.current_state = GameState.CHARACTER_GENERATION
-            # self.init_character_generation()
+            self.init_character_generation()
 
     def draw_title(self):
         # draw title screen
@@ -95,6 +96,80 @@ class Game:
         inst_rect = instruction.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
         self.screen.blit(instruction, inst_rect)
 
+    # =============== CHARACTER GENERATION ===============
+    def init_character_generation(self):
+        # generate random character
+        self.current_character_data = self.character_generator.generate_random_character()
+
+        # tutorial map
+        self.tutorial_level = Level('assets/maps/tutorial.tmx', self)
+
+        # create preview character
+        self.preview_player = CharacterPreviewPlayer(
+            self.tutorial_level.spawn_point,
+            self.current_character_data
+        )
+
+    def handle_character_events(self, event):
+        # character generation input
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                # reroll character
+                self.reroll_character()
+            elif event.key == pygame.K_RETURN:
+                print("Venture forth!")
+
+    def reroll_character(self):
+        # generate new character
+        self.current_character_data = self.character_generator.generate_random_character()
+        self.preview_player.update_character_data(self.current_character_data)
+
+    def update_character_generation(self):
+        # update character movement
+        self.preview_player.update()
+
+        # handle collisions with tutorial room walls
+        for wall in self.tutorial_level.walls:
+            if self.preview_player.rect.colliderect(wall):
+                self.preview_player.revert_movement()
+                break
+
+    def draw_character_generation(self):
+        # character generation screen
+        self.screen.fill(BLACK)
+
+        # tutorial room and character
+        self.tutorial_level.draw(self.screen)
+        self.preview_player.draw(self.screen)
+
+        # draw character info
+        self.draw_character_info()
+
+    def draw_character_info(self):
+        character = self.current_character_data
+
+        # ui position
+        ui_x = WIDTH / 2
+        ui_y = HEIGHT / 3
+
+        # class name
+        class_text = self.medium_font.render(f"Class: {character['class']['name']}", True, WHITE)
+        self.screen.blit(class_text, (ui_x, ui_y))
+
+        # HP
+        ui_y += 70
+        hp_text = self.small_font.render(f"HP: {character['HP']}", True, WHITE)
+        self.screen.blit(hp_text, (ui_x, ui_y))
+
+        # stats
+        ui_y += 30
+        stats = character['stats']
+        self.screen.blit(self.small_font.render(f"STR: {stats['str']}", True, WHITE), (ui_x, ui_y))
+        self.screen.blit(self.small_font.render(f"DEX: {stats['dex']}", True, WHITE), (ui_x + 150, ui_y))
+        self.screen.blit(self.small_font.render(f"INT: {stats['int']}", True, WHITE), (ui_x, ui_y + 30))
+        self.screen.blit(self.small_font.render(f"LUC: {stats['luc']}", True, WHITE), (ui_x + 150, ui_y + 30))
+
+    # =============== GAME ===============
     def events(self):
         # event loop
         for event in pygame.event.get():
