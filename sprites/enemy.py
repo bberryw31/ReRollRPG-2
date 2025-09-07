@@ -38,6 +38,17 @@ class Enemy(pygame.sprite.Sprite):
             img = pygame.transform.scale_by(img, 2)
             self.idle_frames.append(img.convert_alpha())
 
+        for i in range(len(self.idle_frames)):
+            self.idle_frames[i] = self.trim_transparent_borders(self.idle_frames[i])
+
+    def trim_transparent_borders(self, surface):
+        # remove transparent borders from surface
+        mask = pygame.mask.from_surface(surface)
+        if mask.get_bounding_rects():
+            bounds = mask.get_bounding_rects()[0]
+            return surface.subsurface(bounds).copy()
+        return surface
+
     def update(self):
         self.animate()
 

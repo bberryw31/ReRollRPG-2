@@ -114,6 +114,19 @@ class CharacterPreviewPlayer:
             self.idle_frames.append(idle_img.convert_alpha())
             self.run_frames.append(run_img.convert_alpha())
 
+        for i in range(len(self.idle_frames)):
+            self.idle_frames[i] = self.trim_transparent_borders(self.idle_frames[i])
+        for i in range(len(self.run_frames)):
+            self.run_frames[i] = self.trim_transparent_borders(self.run_frames[i])
+
+    def trim_transparent_borders(self, surface):
+        # remove transparent borders from surface
+        mask = pygame.mask.from_surface(surface)
+        if mask.get_bounding_rects():
+            bounds = mask.get_bounding_rects()[0]
+            return surface.subsurface(bounds).copy()
+        return surface
+
     def update_character_data(self, new_character_data):
         # update character data
         self.character_data = new_character_data
