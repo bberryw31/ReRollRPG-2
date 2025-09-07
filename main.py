@@ -49,6 +49,8 @@ class Game:
                     self.handle_title_events(event)
                 elif self.current_state == GameState.CHARACTER_GENERATION:
                     self.handle_character_events(event)
+                elif self.current_state == GameState.GAMEPLAY:
+                    self.handle_gameplay_events(event)
 
             # update based on current state
             if self.current_state == GameState.TITLE:
@@ -56,6 +58,9 @@ class Game:
             elif self.current_state == GameState.CHARACTER_GENERATION:
                 self.update_character_generation()
                 self.draw_character_generation()
+            elif self.current_state == GameState.GAMEPLAY:
+                self.update_gameplay()
+                self.draw_gameplay()
 
             pygame.display.flip()
             self.clock.tick(FPS)
@@ -185,9 +190,13 @@ class Game:
         for spawn in self.level.enemy_spawns:
             Enemy(spawn, [self.all_sprites, self.enemies])
 
-    def update(self):
+    def handle_gameplay_events(self, event):
+        # handle gameplay events
+        self.interaction_manager.handle_input(event)
+
+    def update_gameplay(self):
         if not self.interaction_manager.in_combat:
-            # update game
+            # update sprites
             self.all_sprites.update()
 
             # handle collisions
@@ -195,9 +204,6 @@ class Game:
 
             # check nearby enemies
             self.interaction_manager.update(self.player, self.enemies)
-
-        # game fps
-        self.clock.tick(FPS)
 
     def handle_collisions(self):
         # check collisions
@@ -214,11 +220,9 @@ class Game:
     def check_player_enemy_collision(self):
         # find collided enemy sprites
         hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, False)
-
         if hit_enemies:
             for enemy in hit_enemies:
                 self.resolve_collision(enemy.rect)
-
                 break
 
     def resolve_collision(self, target):
@@ -266,8 +270,6 @@ class Game:
 
             nearby_enemy = self.interaction_manager.nearby_enemy
             self.ui_manager.draw_enemy_ui(self.screen, nearby_enemy, nearby_enemy.HP, nearby_enemy.max_HP)
-
-        pygame.display.flip()
 
 
 if __name__ == "__main__":
