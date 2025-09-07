@@ -63,21 +63,21 @@ class InteractionManager:
         self.in_combat = False
         self.combat_target = None
 
-    def draw(self, screen):
+    def draw(self, screen, camera):
         if not self.nearby_enemy:
             return
 
         # enemy position
         enemy_world_pos = (self.nearby_enemy.rect.centerx, self.nearby_enemy.rect.top)
-        enemy_screen_pos = Camera.apply_pos(enemy_world_pos)
+        enemy_screen_pos = camera.apply_pos(enemy_world_pos)
 
         # add game area offset
-        enemy_screen_x = enemy_screen_pos[0] + GAME_OFFSET_X
-        enemy_screen_y = enemy_screen_pos[1] + GAME_OFFSET_Y
+        enemy_screen_x = enemy_screen_pos[0]
+        enemy_screen_y = enemy_screen_pos[1]
 
         # only draw if enemy is visible on screen
-        game_area = pygame.Rect(GAME_OFFSET_X, GAME_OFFSET_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
-        if game_area.collidepoint(enemy_screen_x, enemy_screen_y):
+        screen_area = pygame.Rect(0, 0, WIDTH, HEIGHT)
+        if screen_area.collidepoint(enemy_screen_x, enemy_screen_y):
             # draw prompt text
             prompt_text = "Attack"
             text_surface = self.font.render(prompt_text, True, (255, 50, 50))
