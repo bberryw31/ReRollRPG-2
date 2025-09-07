@@ -28,7 +28,6 @@ class Game:
         self.character_generator = CharacterGenerator()
         self.current_character_data = None
         self.tutorial_level = None
-        self.preview_sprites = None
         self.preview_player = None
 
         # silkscreen fonts
