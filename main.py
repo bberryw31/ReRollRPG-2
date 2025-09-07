@@ -206,6 +206,9 @@ class Game:
             # handle collisions
             self.handle_collisions()
 
+            # update camera to follow player
+            self.camera.update(self.player)
+
             # check nearby enemies
             self.interaction_manager.update(self.player, self.enemies)
 
@@ -265,10 +268,9 @@ class Game:
         # draw sprites
         for sprite in self.all_sprites:
             sprite_rect = self.camera.apply(sprite.rect)
+            screen_rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
             # only draw if sprite is visible on screen
-            if sprite_rect.colliderect(pygame.Rect(GAME_OFFSET_X, GAME_OFFSET_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)):
-                sprite_rect.x += GAME_OFFSET_X
-                sprite_rect.y += GAME_OFFSET_Y
+            if sprite_rect.colliderect(screen_rect):
                 self.screen.blit(sprite.image, sprite_rect)
 
         # draw UI
