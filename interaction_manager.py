@@ -1,7 +1,7 @@
 import math
 from enum import Enum
-from camera import Camera
 from settings import *
+from combat_system import CombatSystem
 
 
 class InteractionType(Enum):
@@ -15,14 +15,17 @@ class InteractionManager:
     def __init__(self):
         # interaction states
         self.nearby_enemy = None
-        self.in_combat = False
-        self.combat_target = None
+        self.combat_system = CombatSystem()
 
         # UI
         self.font = pygame.font.Font(None, 24)
 
         # Proximity detection
         self.interaction_range = 50
+
+    @property
+    def in_combat(self):
+        return self.combat_system.in_combat
 
     def update(self, player, enemies):
         if self.in_combat:
@@ -41,27 +44,13 @@ class InteractionManager:
         else:
             self.nearby_enemy = None
 
-    def handle_input(self, event):
+    def handle_input(self, event, player):
         if self.in_combat:
             return
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
             if self.nearby_enemy:
-                self.start_combat(self.nearby_enemy)
-
-    def start_combat(self, enemy):
-        print(f"Starting combat with enemy!")
-        self.in_combat = True
-        self.combat_target = enemy
-
-        # combat logic
-        self.end_combat()
-
-    def end_combat(self):
-        # end combat
-        print("Combat ended!")
-        self.in_combat = False
-        self.combat_target = None
+                self.combat_system.start_combat(player, self.nearby_enemy)
 
     def draw(self, screen, camera):
         if not self.nearby_enemy:

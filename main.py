@@ -196,7 +196,7 @@ class Game:
 
     def handle_gameplay_events(self, event):
         # handle gameplay events
-        self.interaction_manager.handle_input(event)
+        self.interaction_manager.handle_input(event, self.player)
 
     def update_gameplay(self):
         if not self.interaction_manager.in_combat:
