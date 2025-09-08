@@ -163,7 +163,7 @@ class Game:
         self.screen.blit(self.small_font.render(f"LUC: {stats['luc']}", True, WHITE), (ui_x + 150, ui_y + 30))
 
         # control text
-        ui_x = 210
+        ui_x = 370
         ui_y += 150
         reroll_text = self.medium_font.render(f"   R        Reroll Character", True, WHITE)
         self.screen.blit(reroll_text, (ui_x, ui_y))
