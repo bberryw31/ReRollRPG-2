@@ -3,7 +3,7 @@ import pygame
 
 
 class SlashEffect(pygame.sprite.Sprite):
-    def __init__(self, position, direction, groups):
+    def __init__(self, position, entity, direction, groups):
         super().__init__(groups)
 
         # load slash animation frames
@@ -12,6 +12,8 @@ class SlashEffect(pygame.sprite.Sprite):
             img = pygame.image.load(f"assets/effects/slash/{i}.png")
             img = pygame.transform.scale_by(img, 0.1)
             img = pygame.transform.flip(img, direction, False)
+            if entity == "enemy":
+                img.fill((222, 0, 0, 30), special_flags=pygame.BLEND_MULT)
             self.frames.append(img.convert_alpha())
 
         # animation properties
@@ -113,7 +115,7 @@ class CombatSystem:
         effect_pos = ((player_pos[0] + enemy_pos[0]) // 2,
                       (player_pos[1] + enemy_pos[1]) // 2)
         attack_direction = player_pos[0] >= enemy_pos[0]
-        SlashEffect(effect_pos, attack_direction, self.effects_group)
+        SlashEffect(effect_pos, "player", attack_direction, self.effects_group)
 
         if self.combat_enemy.HP <= 0:
             print("Enemy defeated!")
@@ -128,7 +130,7 @@ class CombatSystem:
         effect_pos = ((player_pos[0] + enemy_pos[0]) // 2,
                       (player_pos[1] + enemy_pos[1]) // 2)
         attack_direction = player_pos[0] < enemy_pos[0]
-        SlashEffect(effect_pos, attack_direction, self.effects_group)
+        SlashEffect(effect_pos, "enemy", attack_direction, self.effects_group)
 
         if self.combat_player.HP <= 0:
             print("Player defeated!")
