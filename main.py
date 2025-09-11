@@ -62,6 +62,9 @@ class Game:
             elif self.current_state == GameState.GAMEPLAY:
                 self.update_gameplay()
                 self.draw_gameplay()
+            elif self.current_state == GameState.COMBAT:
+                self.update_combat()
+                self.draw_combat()
 
             pygame.display.flip()
             self.clock.tick(FPS)
@@ -182,6 +185,7 @@ class Game:
 
         # initialize game systems
         self.interaction_manager = InteractionManager()
+        self.interaction_manager.game = self  # set reference for state changes
 
         # all sprites
         self.all_sprites = pygame.sprite.Group()
@@ -282,6 +286,44 @@ class Game:
 
             nearby_enemy = self.interaction_manager.nearby_enemy
             self.ui_manager.draw_enemy_ui(self.screen, nearby_enemy, nearby_enemy.HP, nearby_enemy.max_HP)
+
+    # =============== COMBAT ===============
+    def update_combat(self):
+        # update combat system
+        self.interaction_manager.combat_system.update()
+
+        # update sprite animations
+        for sprite in self.all_sprites:
+            sprite.animate()
+
+        # check if combat ended
+        if not self.interaction_manager.in_combat:
+            self.current_state = GameState.GAMEPLAY
+
+    def draw_combat(self):
+        # draw same as gameplay but without movement
+        self.screen.fill(BLACK)
+
+        # draw level
+        self.level.draw(self.screen, self.camera)
+
+        # draw sprites
+        for sprite in self.all_sprites:
+            sprite_rect = self.camera.apply(sprite.rect)
+            screen_rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
+            if sprite_rect.colliderect(screen_rect):
+                self.screen.blit(sprite.image, sprite_rect)
+
+        # draw combat effects
+        self.interaction_manager.combat_system.draw_effects(self.screen, self.camera)
+
+        # draw UI
+        self.ui_manager.draw_player_ui(self.screen, self.player)
+
+        # draw enemy UI if combat enemy exists
+        if self.interaction_manager.combat_system.combat_enemy:
+            enemy = self.interaction_manager.combat_system.combat_enemy
+            self.ui_manager.draw_enemy_ui(self.screen, enemy, enemy.HP, enemy.max_HP)
 
 
 if __name__ == "__main__":
