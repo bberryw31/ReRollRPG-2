@@ -2,6 +2,7 @@ import math
 from enum import Enum
 from settings import *
 from combat_system import CombatSystem
+from game_states import GameState
 
 
 class InteractionType(Enum):
@@ -16,6 +17,7 @@ class InteractionManager:
         # interaction states
         self.nearby_enemy = None
         self.combat_system = CombatSystem()
+        self.game = None  # will be set by main game class
 
         # UI
         self.font = pygame.font.Font(None, 24)
@@ -51,6 +53,9 @@ class InteractionManager:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
             if self.nearby_enemy:
                 self.combat_system.start_combat(player, self.nearby_enemy)
+                # switch to combat state
+                if self.game:
+                    self.game.current_state = GameState.COMBAT
 
     def draw(self, screen, camera):
         if not self.nearby_enemy:
