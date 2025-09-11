@@ -6,3 +6,4 @@ class GameState(Enum):
     TITLE = "title"
     CHARACTER_GENERATION = "character_generation"
     GAMEPLAY = "gameplay"
+    COMBAT = "combat"
