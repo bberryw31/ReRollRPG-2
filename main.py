@@ -296,34 +296,71 @@ class Game:
         for sprite in self.all_sprites:
             sprite.animate()
 
+        # update camera during combat (maintain zoom focus on player)
+        self.camera.update(self.player)
+
         # check if combat ended
         if not self.interaction_manager.in_combat:
             self.current_state = GameState.GAMEPLAY
+            self.camera.set_zoom(1.0)  # reset zoom when combat ends
 
     def draw_combat(self):
-        # draw same as gameplay but without movement
-        self.screen.fill(BLACK)
+        # create temporary surface for scaling
+        zoom = self.camera.get_zoom()
+
+        if zoom == 1.0:
+            # no zoom - draw directly to screen
+            render_surface = self.screen
+        else:
+            # create smaller surface to scale up
+            base_size = (int(WIDTH / zoom), int(HEIGHT / zoom))
+            render_surface = pygame.Surface(base_size)
+
+            # adjust camera for smaller render area
+            original_camera_pos = (self.camera.camera.x, self.camera.camera.y)
+            zoom_offset_x = (WIDTH - base_size[0]) // 2
+            zoom_offset_y = (HEIGHT - base_size[1]) // 2
+            self.camera.camera.x += zoom_offset_x
+            self.camera.camera.y += zoom_offset_y
+
+        # draw everything to render surface
+        render_surface.fill(BLACK)
 
         # draw level
-        self.level.draw(self.screen, self.camera)
+        self.level.draw(render_surface, self.camera)
 
         # draw sprites
         for sprite in self.all_sprites:
             sprite_rect = self.camera.apply(sprite.rect)
-            screen_rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
-            if sprite_rect.colliderect(screen_rect):
-                self.screen.blit(sprite.image, sprite_rect)
+            render_rect = pygame.Rect(0, 0, render_surface.get_width(), render_surface.get_height())
+            if sprite_rect.colliderect(render_rect):
+                render_surface.blit(sprite.image, sprite_rect)
 
         # draw combat effects
-        self.interaction_manager.combat_system.draw_effects(self.screen, self.camera)
+        self.interaction_manager.combat_system.draw_effects(render_surface, self.camera)
 
-        # draw UI
-        self.ui_manager.draw_player_ui(self.screen, self.player)
+        # draw UI (scale UI elements too)
+        if zoom == 1.0:
+            self.ui_manager.draw_player_ui(render_surface, self.player)
+            if self.interaction_manager.combat_system.combat_enemy:
+                enemy = self.interaction_manager.combat_system.combat_enemy
+                self.ui_manager.draw_enemy_ui(render_surface, enemy, enemy.HP, enemy.max_HP)
 
-        # draw enemy UI if combat enemy exists
-        if self.interaction_manager.combat_system.combat_enemy:
-            enemy = self.interaction_manager.combat_system.combat_enemy
-            self.ui_manager.draw_enemy_ui(self.screen, enemy, enemy.HP, enemy.max_HP)
+        # if zoomed, scale the surface and blit to main screen
+        if zoom != 1.0:
+            # restore camera position
+            self.camera.camera.x, self.camera.camera.y = original_camera_pos
+
+            # scale surface and center it
+            scaled_surface = pygame.transform.scale(render_surface, (WIDTH, HEIGHT))
+            self.screen.fill(BLACK)
+            self.screen.blit(scaled_surface, (0, 0))
+
+            # draw UI at normal size over the scaled world
+            self.ui_manager.draw_player_ui(self.screen, self.player)
+            if self.interaction_manager.combat_system.combat_enemy:
+                enemy = self.interaction_manager.combat_system.combat_enemy
+                self.ui_manager.draw_enemy_ui(self.screen, enemy, enemy.HP, enemy.max_HP)
 
 
 if __name__ == "__main__":
