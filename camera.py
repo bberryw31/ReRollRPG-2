@@ -11,6 +11,11 @@ class Camera:
         # smooth camera movement
         self.target_x = 0
         self.target_y = 0
+        
+        # simple zoom for surface scaling
+        self.zoom = 1.0
+        self.target_zoom = 1.0
+        self.zoom_speed = 0.1
 
     def apply(self, entity_rect):
         # apply camera offset
@@ -21,6 +26,12 @@ class Camera:
         return (pos[0] - self.camera.x, pos[1] - self.camera.y)
 
     def update(self, target):
+        # update zoom smoothly
+        if abs(self.zoom - self.target_zoom) > 0.01:
+            self.zoom += (self.target_zoom - self.zoom) * self.zoom_speed
+        else:
+            self.zoom = self.target_zoom
+            
         # update to follow target
         # center camera on target
         self.target_x = target.rect.centerx - WIDTH // 2
@@ -36,6 +47,14 @@ class Camera:
         self.camera.x = min(self.width - WIDTH, self.camera.x)
         self.camera.y = min(self.height - HEIGHT, self.camera.y)
 
+    def set_zoom(self, zoom_level):
+        # set target zoom level
+        self.target_zoom = zoom_level
+        
+    def get_zoom(self):
+        # get current zoom level
+        return self.zoom
+        
     def get_visible_area(self):
         # get the area currently visible by the camera
         return pygame.Rect(
