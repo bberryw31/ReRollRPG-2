@@ -6,12 +6,19 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, position, groups):
         super().__init__(groups)
 
+        # facing direction
+        self.facing = "right"  # can be "left" or "right"
+        self.original_facing = random.choice(["left", "right"])
+        
         # load animation frames
         self.idle_frames = []
+        self.idle_frames_left = []
+        self.idle_frames_right = []
         self.load_animations()
 
         # surface
         self.current_frame = random.randint(0, len(self.idle_frames) - 1)
+        self.facing = self.original_facing  # set initial facing
         self.image = self.idle_frames[self.current_frame]
         self.rect = self.image.get_rect(center=position)
 
@@ -29,17 +36,26 @@ class Enemy(pygame.sprite.Sprite):
 
     def load_animations(self):
         sprite_path = 'assets/sprites/enemy'
-        flip = random.choice([True, False])
-        # idle animation
+        
+        # load base animations
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
-            if flip:
-                img = pygame.transform.flip(img, True, False)
             img = pygame.transform.scale_by(img, 2)
-            self.idle_frames.append(img.convert_alpha())
+            
+            # store both normal and flipped versions
+            right_img = img.convert_alpha()
+            left_img = pygame.transform.flip(img, True, False).convert_alpha()
+            
+            self.idle_frames_right.append(right_img)
+            self.idle_frames_left.append(left_img)
 
-        for i in range(len(self.idle_frames)):
-            self.idle_frames[i] = self.trim_transparent_borders(self.idle_frames[i])
+        # trim transparent borders for both directions
+        for i in range(len(self.idle_frames_right)):
+            self.idle_frames_right[i] = self.trim_transparent_borders(self.idle_frames_right[i])
+            self.idle_frames_left[i] = self.trim_transparent_borders(self.idle_frames_left[i])
+            
+        # set idle_frames to the original facing direction
+        self.idle_frames = self.idle_frames_right
 
     def trim_transparent_borders(self, surface):
         # remove transparent borders from surface
@@ -52,6 +68,15 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         self.animate()
 
+    def face_target(self, target_pos):
+        # make enemy face towards target position
+        if target_pos[0] < self.rect.centerx:
+            self.facing = "left"
+            self.idle_frames = self.idle_frames_left
+        else:
+            self.facing = "right"
+            self.idle_frames = self.idle_frames_right
+            
     def animate(self):
         frames = self.idle_frames
 
