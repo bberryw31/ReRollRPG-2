@@ -301,8 +301,11 @@ class Game:
 
         # check if combat ended
         if not self.interaction_manager.in_combat:
-            self.current_state = GameState.GAMEPLAY
-            self.camera.set_zoom(1.0)  # reset zoom when combat ends
+            # start zoom out transition but stay in combat state until zoom completes
+            self.camera.set_zoom(1.0)
+            # only switch to gameplay when zoom is close to 1.0
+            if abs(self.camera.get_zoom() - 1.0) < 0.1:
+                self.current_state = GameState.GAMEPLAY
 
     def draw_combat(self):
         # create temporary surface for scaling

@@ -15,7 +15,7 @@ class Camera:
         # simple zoom for surface scaling
         self.zoom = 1.0
         self.target_zoom = 1.0
-        self.zoom_speed = 0.1
+        self.zoom_speed = 0.15  # faster zoom transition
 
     def apply(self, entity_rect):
         # apply camera offset
@@ -27,7 +27,7 @@ class Camera:
 
     def update(self, target):
         # update zoom smoothly
-        if abs(self.zoom - self.target_zoom) > 0.01:
+        if abs(self.zoom - self.target_zoom) > 0.05:
             self.zoom += (self.target_zoom - self.zoom) * self.zoom_speed
         else:
             self.zoom = self.target_zoom
