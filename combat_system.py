@@ -63,6 +63,9 @@ class CombatSystem:
         self.player_turn = True
         self.turn_timer = 0
         self.waiting_for_animation = False
+        
+        # make enemy face player
+        enemy.face_target(player.rect.center)
 
     def update(self):
         # update combat state - called from main game loop
