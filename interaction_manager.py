@@ -53,9 +53,10 @@ class InteractionManager:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
             if self.nearby_enemy:
                 self.combat_system.start_combat(player, self.nearby_enemy)
-                # switch to combat state
+                # switch to combat state and zoom camera
                 if self.game:
                     self.game.current_state = GameState.COMBAT
+                    self.game.camera.set_zoom(2.0)  # 2x zoom during combat
 
     def draw(self, screen, camera):
         if not self.nearby_enemy:
