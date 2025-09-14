@@ -69,6 +69,7 @@ class UIManager:
 
         # enemy icon
         enemy_icon = pygame.transform.scale_by(enemy.idle_frames[0], 2)
+        enemy_icon = pygame.transform.flip(enemy_icon, True, False)
         icon_rect = enemy_icon.get_rect()
         icon_rect.topright = (ui_x, ui_y)
         screen.blit(enemy_icon, icon_rect)
