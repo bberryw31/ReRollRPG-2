@@ -2,6 +2,44 @@ from settings import *
 import pygame
 
 
+class DamageText(pygame.sprite.Sprite):
+    def __init__(self, position, damage_value, groups):
+        super().__init__(groups)
+
+        # create text surface
+        self.font = pygame.font.Font(None, 32)
+        self.damage_text = str(damage_value)
+        self.image = self.font.render(self.damage_text, True, (255, 255, 255))
+        self.rect = self.image.get_rect(center=position)
+
+        # animation properties
+        self.lifetime = 30  # 30 frames
+        self.current_frame = 0
+        self.start_y = position[1]
+        self.float_speed = 1.5  # pixels per frame upward
+
+        # store original image for fading
+        self.original_image = self.image.copy()
+
+    def update(self):
+        self.current_frame += 1
+
+        # move upward
+        self.rect.y = self.start_y - (self.current_frame * self.float_speed)
+
+        # fade out over time
+        alpha = int(255 * (1 - self.current_frame / self.lifetime))
+        alpha = max(0, alpha)
+
+        # create faded image
+        self.image = self.original_image.copy()
+        self.image.set_alpha(alpha)
+
+        # remove when lifetime expires
+        if self.current_frame >= self.lifetime:
+            self.kill()
+
+
 class SlashEffect(pygame.sprite.Sprite):
     def __init__(self, position, entity, direction, groups):
         super().__init__(groups)
@@ -53,6 +91,7 @@ class CombatSystem:
         self.enemy_damage = 1
 
         # effects
+        self.damage_text_group = pygame.sprite.Group()
         self.effects_group = pygame.sprite.Group()
 
     def start_combat(self, player, enemy):
@@ -75,6 +114,7 @@ class CombatSystem:
 
         # update effects
         self.effects_group.update()
+        self.damage_text_group.update()
 
         # handle turn timing
         if self.waiting_for_animation:
@@ -123,6 +163,10 @@ class CombatSystem:
         attack_direction = player_pos[0] >= enemy_pos[0]
         SlashEffect(effect_pos, "player", attack_direction, self.effects_group)
 
+        # create damage text above enemy
+        damage_pos = (enemy_pos[0], enemy_pos[1] - 30)  # 30 pixels above enemy
+        DamageText(damage_pos, self.player_damage, self.damage_text_group)
+
         if self.combat_enemy.HP <= 0:
             print("Enemy defeated!")
 
@@ -137,6 +181,10 @@ class CombatSystem:
                       (player_pos[1] + enemy_pos[1]) // 2)
         attack_direction = player_pos[0] < enemy_pos[0]
         SlashEffect(effect_pos, "enemy", attack_direction, self.effects_group)
+
+        # create damage text above player
+        damage_pos = (player_pos[0], player_pos[1] - 30)  # 30 pixels above player
+        DamageText(damage_pos, self.enemy_damage, self.damage_text_group)
 
         if self.combat_player.HP <= 0:
             print("Player defeated!")
@@ -169,3 +217,10 @@ class CombatSystem:
             screen_rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
             if effect_rect.colliderect(screen_rect):
                 screen.blit(effect.image, effect_rect)
+
+        # draw damage text
+        for damage_text in self.damage_text_group:
+            text_rect = camera.apply(damage_text.rect)
+            screen_rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
+            if text_rect.colliderect(screen_rect):
+                screen.blit(damage_text.image, text_rect)
