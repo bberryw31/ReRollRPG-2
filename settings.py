@@ -22,6 +22,7 @@ GREEN = (0, 255, 0)
 
 # player
 PLAYER_SPEED = 3
+INTERACTION_RANGE = 50
 
 # camera
 CAMERA_SMOOTHING = 0.1

@@ -23,7 +23,7 @@ class InteractionManager:
         self.font = pygame.font.Font(None, 24)
 
         # Proximity detection
-        self.interaction_range = 50
+        self.interaction_range = INTERACTION_RANGE
 
     @property
     def in_combat(self):
