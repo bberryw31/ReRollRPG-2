@@ -312,7 +312,7 @@ class Game:
         zoom = self.camera.get_zoom()
 
         if zoom == 1.0:
-            # no zoom - draw directly to screen
+            # no zoom - draw directly to screen  
             render_surface = self.screen
         else:
             # create smaller surface to scale up
@@ -342,14 +342,7 @@ class Game:
         # draw combat effects
         self.interaction_manager.combat_system.draw_effects(render_surface, self.camera)
 
-        # draw UI (scale UI elements too)
-        if zoom == 1.0:
-            self.ui_manager.draw_player_ui(render_surface, self.player)
-            if self.interaction_manager.combat_system.combat_enemy:
-                enemy = self.interaction_manager.combat_system.combat_enemy
-                self.ui_manager.draw_enemy_ui(render_surface, enemy, enemy.HP, enemy.max_HP)
-
-        # if zoomed, scale the surface and blit to main screen
+        # draw UI at normal size after handling zoom
         if zoom != 1.0:
             # restore camera position
             self.camera.camera.x, self.camera.camera.y = original_camera_pos
@@ -359,11 +352,11 @@ class Game:
             self.screen.fill(BLACK)
             self.screen.blit(scaled_surface, (0, 0))
 
-            # draw UI at normal size over the scaled world
-            self.ui_manager.draw_player_ui(self.screen, self.player)
-            if self.interaction_manager.combat_system.combat_enemy:
-                enemy = self.interaction_manager.combat_system.combat_enemy
-                self.ui_manager.draw_enemy_ui(self.screen, enemy, enemy.HP, enemy.max_HP)
+        # always draw UI at normal size (never scale UI)
+        self.ui_manager.draw_player_ui(self.screen, self.player)
+        if self.interaction_manager.combat_system.combat_enemy:
+            enemy = self.interaction_manager.combat_system.combat_enemy
+            self.ui_manager.draw_enemy_ui(self.screen, enemy, enemy.HP, enemy.max_HP)
 
 
 if __name__ == "__main__":
