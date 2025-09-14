@@ -317,7 +317,7 @@ class Game:
         else:
             # create smaller surface to scale up
             base_size = (int(WIDTH / zoom), int(HEIGHT / zoom))
-            render_surface = pygame.Surface(base_size)
+            render_surface = pygame.Surface(base_size, pygame.SRCALPHA)
 
             # adjust camera for smaller render area
             original_camera_pos = (self.camera.camera.x, self.camera.camera.y)
