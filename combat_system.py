@@ -43,7 +43,8 @@ class CombatSystem:
         # turn management
         self.player_turn = True
         self.turn_timer = 0
-        self.turn_delay = 60
+        self.player_to_enemy_delay = 20
+        self.enemy_to_player_delay = 40
         self.attack_delay = 30
         self.waiting_for_animation = False
 
@@ -63,7 +64,7 @@ class CombatSystem:
         self.player_turn = True
         self.turn_timer = 0
         self.waiting_for_animation = False
-        
+
         # make enemy face player
         enemy.face_target(player.rect.center)
 
@@ -96,7 +97,9 @@ class CombatSystem:
                     self.player_turn = True
         else:
             self.turn_timer += 1
-            if self.turn_timer >= self.turn_delay:
+            # Use different delays based on whose turn it is
+            current_delay = self.enemy_to_player_delay if self.player_turn else self.player_to_enemy_delay
+            if self.turn_timer >= current_delay:
                 self.execute_turn()
                 self.turn_timer = 0
 
