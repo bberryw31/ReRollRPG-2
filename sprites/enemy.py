@@ -9,7 +9,7 @@ class Enemy(pygame.sprite.Sprite):
         # facing direction
         self.facing = "right"  # can be "left" or "right"
         self.original_facing = random.choice(["left", "right"])
-        
+
         # load animation frames
         self.idle_frames = []
         self.idle_frames_left = []
@@ -25,6 +25,11 @@ class Enemy(pygame.sprite.Sprite):
         # animation
         self.animation_speed = 0.15
 
+        # damage blink effect
+        self.blink_timer = 0
+        self.blink_duration = 15  # frames to blink
+        self.is_blinking = False
+
         # HP system
         self.max_HP = 10
         self.HP = self.max_HP
@@ -32,20 +37,21 @@ class Enemy(pygame.sprite.Sprite):
     def take_damage(self, damage):
         # take damage and return if alive
         self.HP = max(0, self.HP - damage)
+        self.start_blink()
         return self.HP > 0
 
     def load_animations(self):
         sprite_path = 'assets/sprites/enemy'
-        
+
         # load base animations
         for i in range(4):
             img = pygame.image.load(f"{sprite_path}/idle{i}.png")
             img = pygame.transform.scale_by(img, 2)
-            
+
             # store both normal and flipped versions
             right_img = img.convert_alpha()
             left_img = pygame.transform.flip(img, True, False).convert_alpha()
-            
+
             self.idle_frames_right.append(right_img)
             self.idle_frames_left.append(left_img)
 
@@ -53,7 +59,7 @@ class Enemy(pygame.sprite.Sprite):
         for i in range(len(self.idle_frames_right)):
             self.idle_frames_right[i] = self.trim_transparent_borders(self.idle_frames_right[i])
             self.idle_frames_left[i] = self.trim_transparent_borders(self.idle_frames_left[i])
-            
+
         # set idle_frames to the original facing direction
         self.idle_frames = self.idle_frames_right
 
@@ -76,8 +82,11 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.facing = "right"
             self.idle_frames = self.idle_frames_right
-            
+
     def animate(self):
+        # update blink effect
+        self.update_blink()
+
         frames = self.idle_frames
 
         # advance frame
@@ -90,8 +99,29 @@ class Enemy(pygame.sprite.Sprite):
 
         # update image
         img = frames[int(self.current_frame)]
-        self.image = img
 
+        # apply blink effect
+        if self.is_blinking and (self.blink_timer // 5) % 2:  # blink every 5 frames
+            # create white tinted version
+            white_tint = pygame.Surface(img.get_size(), pygame.SRCALPHA)
+            white_tint.fill((255, 255, 255, 180))
+            img = img.copy()
+            img.blit(white_tint, (0, 0), special_flags=pygame.BLEND_ADD)
+
+        self.image = img
         self.rect = self.image.get_rect()
         self.rect.bottom = old_bottom
         self.rect.centerx = old_centerx
+
+    def start_blink(self):
+        # start the damage blink effect
+        self.is_blinking = True
+        self.blink_timer = 0
+
+    def update_blink(self):
+        # handle blink timing
+        if self.is_blinking:
+            self.blink_timer += 1
+            if self.blink_timer >= self.blink_duration:
+                self.is_blinking = False
+                self.blink_timer = 0

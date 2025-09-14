@@ -32,9 +32,15 @@ class Player(pygame.sprite.Sprite):
         self.is_moving = False
         self.facing = "right"
 
+        # damage blink effect
+        self.blink_timer = 0
+        self.blink_duration = 15  # frames to blink
+        self.is_blinking = False
+
     def take_damage(self, damage):
         # take damage and return if alive
         self.HP = max(0, self.HP - damage)
+        self.start_blink()
         return self.HP > 0
 
     def heal(self, amount):
@@ -96,6 +102,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = self.position
 
     def animate(self):
+        # update blink effect
+        self.update_blink()
+
         # choose animation
         if self.is_moving:
             frames = self.run_frames
@@ -112,9 +121,30 @@ class Player(pygame.sprite.Sprite):
         if self.facing == "left":
             img = pygame.transform.flip(img, True, False)
 
+        # apply blink effect
+        if self.is_blinking and (self.blink_timer // 5) % 2:  # blink every 5 frames
+            # create white tinted version
+            white_tint = pygame.Surface(img.get_size(), pygame.SRCALPHA)
+            white_tint.fill((255, 255, 255, 180))
+            img = img.copy()
+            img.blit(white_tint, (0, 0), special_flags=pygame.BLEND_ADD)
+
         old_bottom = self.rect.bottom
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.bottom = old_bottom
         self.rect.centerx = self.position.x
         self.position = pygame.math.Vector2(self.rect.center)
+
+    def start_blink(self):
+        # start the damage blink effect
+        self.is_blinking = True
+        self.blink_timer = 0
+
+    def update_blink(self):
+        # handle blink timing
+        if self.is_blinking:
+            self.blink_timer += 1
+            if self.blink_timer >= self.blink_duration:
+                self.is_blinking = False
+                self.blink_timer = 0
