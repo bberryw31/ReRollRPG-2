@@ -334,6 +334,10 @@ class Game:
 
         # draw sprites
         for sprite in self.all_sprites:
+            # only draw if sprite is visible
+            if hasattr(sprite, 'visible') and not sprite.visible:
+                continue
+
             sprite_rect = self.camera.apply(sprite.rect)
             render_rect = pygame.Rect(0, 0, render_surface.get_width(), render_surface.get_height())
             if sprite_rect.colliderect(render_rect):

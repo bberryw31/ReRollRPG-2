@@ -12,7 +12,7 @@ class BloodSplatterEffect(pygame.sprite.Sprite):
 
         # animation properties
         self.current_frame = 0
-        self.animation_speed = 0.25
+        self.animation_speed = 0.3
         self.image = self.frames[0]
         self.rect = self.image.get_rect(center=position)
 
@@ -220,6 +220,7 @@ class CombatSystem:
         DamageText(damage_pos, self.player_damage, self.damage_text_group)
 
         if self.combat_enemy.HP <= 0:
+            self.combat_enemy.visible = False
             self.death_animation_playing = True
             self.death_animation_effect = BloodSplatterEffect(enemy_pos, self.effects_group)
 
@@ -240,6 +241,7 @@ class CombatSystem:
         DamageText(damage_pos, self.enemy_damage, self.damage_text_group)
 
         if self.combat_player.HP <= 0:
+            self.combat_player.visible = False
             self.death_animation_playing = True
             self.death_animation_effect = BloodSplatterEffect(player_pos, self.effects_group)
 
