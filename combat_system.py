@@ -2,6 +2,40 @@ from settings import *
 import pygame
 
 
+class BloodSplatterEffect(pygame.sprite.Sprite):
+    def __init__(self, position, groups):
+        super().__init__(groups)
+
+        # load blood animation frames
+        self.frames = []
+        self.load_frames()
+
+        # animation properties
+        self.current_frame = 0
+        self.animation_speed = 0.25
+        self.image = self.frames[0]
+        self.rect = self.image.get_rect(center=position)
+
+        # callback for when animation finishes
+        self.animation_finished = False
+
+    def load_frames(self):
+        for i in range(29):
+            img = pygame.image.load(f"assets/effects/blood/{i}.png")
+            img = pygame.transform.scale_by(img, 2)
+            self.frames.append(img.convert_alpha())
+
+    def update(self):
+        # animate blood splatter
+        self.current_frame += self.animation_speed
+
+        if self.current_frame >= len(self.frames):
+            self.animation_finished = True
+            self.kill()  # remove when animation completes
+        else:
+            self.image = self.frames[int(self.current_frame)]
+
+
 class DamageText(pygame.sprite.Sprite):
     def __init__(self, position, damage_value, groups):
         super().__init__(groups)
@@ -94,6 +128,10 @@ class CombatSystem:
         self.damage_text_group = pygame.sprite.Group()
         self.effects_group = pygame.sprite.Group()
 
+        # death animation
+        self.death_animation_playing = False
+        self.death_animation_effect = None
+
     def start_combat(self, player, enemy):
         # start combat between player and enemy
         print(f"Starting combat")
@@ -116,6 +154,22 @@ class CombatSystem:
         self.effects_group.update()
         self.damage_text_group.update()
 
+        # check if death animation is playing
+        if self.death_animation_playing:
+            # wait for death animation to finish
+            if self.death_animation_effect and self.death_animation_effect.animation_finished:
+                # animation finished, end combat
+                player_wins = self.combat_enemy.HP <= 0
+                self.end_combat(player_wins)
+                return
+            elif not self.death_animation_effect:
+                # animation effect was removed, end combat
+                player_wins = self.combat_enemy.HP <= 0
+                self.end_combat(player_wins)
+                return
+            # don't process turns while death animation plays
+            return
+
         # handle turn timing
         if self.waiting_for_animation:
             self.turn_timer += 1
@@ -126,13 +180,11 @@ class CombatSystem:
                 if self.player_turn:
                     # check if enemy died
                     if self.combat_enemy.HP <= 0:
-                        self.end_combat(player_wins=True)
                         return
                     self.player_turn = False
                 else:
                     # check if player died  
                     if self.combat_player.HP <= 0:
-                        self.end_combat(player_wins=False)
                         return
                     self.player_turn = True
         else:
@@ -168,7 +220,8 @@ class CombatSystem:
         DamageText(damage_pos, self.player_damage, self.damage_text_group)
 
         if self.combat_enemy.HP <= 0:
-            print("Enemy defeated!")
+            self.death_animation_playing = True
+            self.death_animation_effect = BloodSplatterEffect(enemy_pos, self.effects_group)
 
     def enemy_attack(self):
         # enemy attacks player
@@ -187,7 +240,8 @@ class CombatSystem:
         DamageText(damage_pos, self.enemy_damage, self.damage_text_group)
 
         if self.combat_player.HP <= 0:
-            print("Player defeated!")
+            self.death_animation_playing = True
+            self.death_animation_effect = BloodSplatterEffect(player_pos, self.effects_group)
 
     def end_combat(self, player_wins):
         # end combat
@@ -207,8 +261,13 @@ class CombatSystem:
         self.turn_timer = 0
         self.waiting_for_animation = False
 
+        # reset death animation state
+        self.death_animation_playing = False
+        self.death_animation_effect = None
+
         # clear effects
         self.effects_group.empty()
+        self.damage_text_group.empty()
 
     def draw_effects(self, screen, camera):
         # draw combat effects
