@@ -12,7 +12,7 @@ class BloodSplatterEffect(pygame.sprite.Sprite):
 
         # animation properties
         self.current_frame = 0
-        self.animation_speed = 0.3
+        self.animation_speed = 0.4
         self.image = self.frames[0]
         self.rect = self.image.get_rect(center=position)
 
